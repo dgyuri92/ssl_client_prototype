@@ -1,0 +1,4 @@
+Simple OpenSSL client prototype written by György Demarcsek
+
+Build: gcc client_openssl.c -o client_openssl -Wall -lssl -lcrypto
+
