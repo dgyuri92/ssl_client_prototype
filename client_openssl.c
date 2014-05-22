@@ -80,6 +80,7 @@ int main(int argc, char* argv[])
         static int verbose = 0;
         static struct option cmd_opts[] = {
                 {"verbose", no_argument, &verbose, 1},
+                {"help", no_argument, 0, 'h'},
                 {"ca", required_argument, 0, 'a'},
                 {"cert", required_argument, 0, 'c'},
                 {"key", required_argument, 0, 'k'},
@@ -89,11 +90,14 @@ int main(int argc, char* argv[])
 
         int c, oi = 0;
         while (1) {
-                if ((c = getopt_long(argc, argv, "a:c:k:p:", cmd_opts, &oi)) == -1) break;
+                if ((c = getopt_long(argc, argv, "ha:c:k:p:", cmd_opts, &oi)) == -1) break;
                 switch (c) {
                 case '0':
                 case '?':
                         break;
+                case 'h':
+                        usage(argv[0]);
+                        exit(0);
                 case 'a':
                         strncpy(ca_file_path, optarg, PATH_MAX);
                         break;
@@ -180,9 +184,6 @@ int main(int argc, char* argv[])
                         if (!SSL_CTX_use_PrivateKey_file(ctx, key_file_path, SSL_FILETYPE_PEM)) {
                                 ERR_HANDLER;
                         }
-                        if (!SSL_CTX_check_private_key(ctx)) {
-                                ERR_HANDLER;
-                        }
                 } else {
                         FILE* pKeyFile = fopen(key_file_path, "r");
                         if (pKeyFile == NULL) {
@@ -198,6 +199,10 @@ int main(int argc, char* argv[])
                                 ERR_HANDLER;
                         }
                         fclose(pKeyFile);
+                }
+
+                if (!SSL_CTX_check_private_key(ctx)) {
+                        ERR_HANDLER;
                 }
         }
 
